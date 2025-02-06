@@ -28,7 +28,7 @@ def get_revisions(title, limit=10):
         return page.get("revisions", [])
     return []
 
-# Step 2: Capture Screenshots of Diffs
+# Step 2: Capture Full Page Screenshots of Diffs
 def capture_diff_screenshots(revisions):
     if not os.path.exists(SCREENSHOTS_DIR):
         os.makedirs(SCREENSHOTS_DIR)
@@ -44,6 +44,12 @@ def capture_diff_screenshots(revisions):
         url = f"https://en.wikipedia.org/w/index.php?title={ARTICLE_TITLE}&type=revision&diff={newid}&oldid={oldid}"
         driver.get(url)
         time.sleep(2)  # Allow page to load
+        
+        # Scroll to capture full page
+        total_height = driver.execute_script("return document.body.scrollHeight")
+        driver.set_window_size(1200, total_height)
+        time.sleep(1)
+        
         screenshot_path = os.path.join(SCREENSHOTS_DIR, f"diff_{i}.png")
         driver.save_screenshot(screenshot_path)
     
